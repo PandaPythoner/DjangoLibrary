@@ -1,0 +1,69 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>My Website</title>
+  </head>
+  <body>
+    <main>
+      <div>
+         <h1 style="text-align:center">
+            Рейтинг лучших книг во вселенной
+         </h1>
+         <table style="margin:auto">
+            {% for book in books %}
+               <tr>
+                  <th>
+                     <table>
+                        <tr>
+                           <th>
+                              <a href="/home/book_info?book_id={{ book.id }}"> 
+                                 <img src="{{ book.img.url}}" alt="connect" style="max-height:200px">
+                              </a>
+                           </th>
+                        </tr>
+                        <tr>
+                           <th>
+                              <img src="{% static 'main_page/like.webp' %}" style="max-height:40px">
+                           </th>
+                           <th>
+                              <font
+                                 {% if book.likes > 0 %}
+                                    color="green"
+                                 {% elif book.likes == 0 %}
+                                    color="black"
+                                 {% else %}
+                                    color="red"
+                                 {% endif %}
+                                 >
+                                 {% if book.likes > 0 %}
+                                    +{{ book.likes }}
+                                 {% else %}
+                                    {{ book.likes }}
+                                 {% endif %}
+                              </font>
+                           </th>
+                        </tr>
+                     </table>
+                  </th>
+                  <th>
+                     <div style="max-width:400px">
+                        <a href="/home/book_info?book_id={{ book.id }}"> {{ book.name }} </a> <br>
+                        <h4> Автор: {{ book.author }} </h4>
+                        {% if book.description|length < 150 %}
+                           {{ book.description }}
+                        {% else %}
+                           {{ book.description|slice:":150" }} ...
+                        {% endif %}
+                     </div>
+                  </th>
+               </tr>
+            {% endfor %}
+         </table>
+      </div>
+    </main>
+  </body>
+</html>
