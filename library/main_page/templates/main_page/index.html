@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="csrf-token" content="{{ csrf_token }}" />
     <title>My Website</title>
   </head>
   <body>
@@ -27,10 +28,57 @@
                         </tr>
                         <tr>
                            <th>
-                              <img src="{% static 'main_page/like.webp' %}" style="max-height:40px">
+                              <script>
+                                 function set_like_counter_data(book_id, new_likes){
+                                    var elements = document.getElementsByClassName("likes_counter" + " " + "book_with_id_" + book_id.toString())
+                                    var new_str = new_likes.toString()
+                                    if(new_likes > 0){
+                                       new_str = "+" + new_str;
+                                    }
+                                    var new_color = "black"
+                                    if(new_likes < 0){
+                                       new_color = "red"
+                                    } else if(new_likes > 0){
+                                       new_color = "green"
+                                    }
+                                    for(var i = 0; i < elements.length; i += 1){
+                                       var element = elements[i]
+                                       element.setAttribute("color", new_color)
+                                       element.innerText = new_str;
+                                    }
+                                 }
+
+                                 function send_request_to_like(book_id, likes_cnt){
+                                    var request = new XMLHttpRequest()
+                                    body = "book_id=" + book_id.toString() + "&likes_cnt=" + likes_cnt.toString()
+                                    request.open("POST", '/home/like_book/', true)
+                                    request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
+                                    request.setRequestHeader("X-CSRFToken", "{{ csrf_token }}")
+                                    request.onload = function(){
+                                       set_like_counter_data(book_id, parseInt(request.response))
+                                    }
+                                    request.send(body)
+                                 }
+                                                               
+                                 function like_pressed(book_id){
+                                    send_request_to_like(book_id, 1)
+                                    set_like_counter_data(book_id, 20)
+                                 }
+
+                                 function dislike_pressed(book_id){
+                                    send_request_to_like(book_id, -1)
+                                    set_like_counter_data(book_id, -20)
+                                 }
+                              </script>
+                              <element onclick="like_pressed({{ book.id }})">
+                                 <img src="{% static 'main_page/like.webp' %}" style="max-height:40px">
+                              </element>
+                              <element onclick="dislike_pressed({{ book.id }})">
+                                 <img src="{% static 'main_page/dislike.webp' %}" style="max-height:40px">
+                              </element>
                            </th>
                            <th>
-                              <font
+                              <font class="likes_counter book_with_id_{{ book.id }}"
                                  {% if book.likes > 0 %}
                                     color="green"
                                  {% elif book.likes == 0 %}
