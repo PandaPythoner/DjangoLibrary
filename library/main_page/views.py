@@ -106,7 +106,8 @@ class DeleteBookView(View):
         if not book_id_is_correct:
             return HttpResponseNotFound("Can't delete book: book_id is not correct")
         form = DeleteBookForm(initial=None, data=request.POST)
-        print(request.POST)
+        if "Андреева" in str(book.author):
+            return HttpResponseNotFound("Нелья удалять книги Евы!!!")
         if form.is_valid():
             form.delete_book()
             return redirect("/home/")
