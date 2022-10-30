@@ -1,0 +1,17 @@
+{% extends "main_page/base.html" %}
+
+{% load static %}
+
+{% block content %}
+    <big> Вы и привда хотите удалить книгу <big> {{ book.name }} </big> ? </big> <br>
+    <big> Ее же написал сам {{ book.author }} !!! </big>
+    <form method='POST' enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="fieldWrapper">
+                <input name="{{ field.name }}" value="{{ field.initial }}" type="hidden">
+            </div>
+        {% endfor %}
+        <input type="submit" value="Удалить">
+    </form>
+{% endblock %}

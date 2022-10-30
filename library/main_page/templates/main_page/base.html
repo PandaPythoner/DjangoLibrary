@@ -1,0 +1,26 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="csrf-token" content="{{ csrf_token }}" />
+    <title>Лучшие книги только у нас!</title>
+  </head>
+  <body>
+    <main>
+      <div style='width:100%; margin-bottom:10px'>
+        <a href='/home/' style='margin-right:100px'>
+          <button style='background-color:#CACACA; border-radius:10px; border: outset #CACACA;'> На главную </button>
+        </a>
+        <a href='/home/add_book/' style='margin-right:5px; float:right'>
+          <button style='background-color:#51FF19; border-radius:10px; border: outset #51FF19;'> Добавить книгу </button>
+        </a>
+      </div>
+      {% block content %}
+
+      {% endblock %}
+    </main>
+  </body>
+</html>

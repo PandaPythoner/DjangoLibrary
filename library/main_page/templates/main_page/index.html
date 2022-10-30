@@ -1,117 +1,108 @@
+{% extends "main_page/base.html" %}
+
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="csrf-token" content="{{ csrf_token }}" />
-    <title>My Website</title>
-  </head>
-  <body>
-    <main>
-      <div>
-         <h1 style="text-align:center">
-            Рейтинг лучших книг во вселенной
-         </h1>
-         <table style="margin:auto">
-            {% for book in books %}
-               <tr>
-                  <th>
-                     <table>
-                        <tr>
-                           <th>
-                              <a href="/home/book_info?book_id={{ book.id }}"> 
-                                 <img src="{{ book.img.url}}" alt="connect" style="max-height:200px">
-                              </a>
-                           </th>
-                        </tr>
-                        <tr>
-                           <th>
-                              <script>
-                                 function set_like_counter_data(book_id, new_likes){
-                                    var elements = document.getElementsByClassName("likes_counter" + " " + "book_with_id_" + book_id.toString())
-                                    var new_str = new_likes.toString()
-                                    if(new_likes > 0){
-                                       new_str = "+" + new_str;
-                                    }
-                                    var new_color = "black"
-                                    if(new_likes < 0){
-                                       new_color = "red"
-                                    } else if(new_likes > 0){
-                                       new_color = "green"
-                                    }
-                                    for(var i = 0; i < elements.length; i += 1){
-                                       var element = elements[i]
-                                       element.setAttribute("color", new_color)
-                                       element.innerText = new_str;
-                                    }
-                                 }
 
-                                 function send_request_to_like(book_id, likes_cnt){
-                                    var request = new XMLHttpRequest()
-                                    body = "book_id=" + book_id.toString() + "&likes_cnt=" + likes_cnt.toString()
-                                    request.open("POST", '/home/like_book/', true)
-                                    request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
-                                    request.setRequestHeader("X-CSRFToken", "{{ csrf_token }}")
-                                    request.onload = function(){
-                                       set_like_counter_data(book_id, parseInt(request.response))
-                                    }
-                                    request.send(body)
+{% block content %}
+   <div>
+      <h1 style="text-align:center">
+         Рейтинг лучших книг во вселенной
+      </h1>
+      <table style="margin:auto">
+         {% for book in books %}
+            <tr>
+               <th>
+                  <table>
+                     <tr>
+                        <th>
+                           <a href="/home/book_info?book_id={{ book.id }}"> 
+                              <img src="{{ book.img.url}}" alt="connect" style="max-height:200px">
+                           </a>
+                        </th>
+                     </tr>
+                     <tr>
+                        <th>
+                           <script>
+                              function set_like_counter_data(book_id, new_likes){
+                                 var elements = document.getElementsByClassName("likes_counter" + " " + "book_with_id_" + book_id.toString())
+                                 var new_str = new_likes.toString()
+                                 if(new_likes > 0){
+                                    new_str = "+" + new_str;
                                  }
-                                                               
-                                 function like_pressed(book_id){
-                                    send_request_to_like(book_id, 1)
-                                    set_like_counter_data(book_id, 20)
+                                 var new_color = "black"
+                                 if(new_likes < 0){
+                                    new_color = "red"
+                                 } else if(new_likes > 0){
+                                    new_color = "green"
                                  }
+                                 for(var i = 0; i < elements.length; i += 1){
+                                    var element = elements[i]
+                                    element.setAttribute("color", new_color)
+                                    element.innerText = new_str;
+                                 }
+                              }
 
-                                 function dislike_pressed(book_id){
-                                    send_request_to_like(book_id, -1)
-                                    set_like_counter_data(book_id, -20)
+                              function send_request_to_like(book_id, likes_cnt){
+                                 var request = new XMLHttpRequest()
+                                 body = "book_id=" + book_id.toString() + "&likes_cnt=" + likes_cnt.toString()
+                                 request.open("POST", '/home/like_book/', true)
+                                 request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
+                                 request.setRequestHeader("X-CSRFToken", "{{ csrf_token }}")
+                                 request.onload = function(){
+                                    set_like_counter_data(book_id, parseInt(request.response))
                                  }
-                              </script>
-                              <element onclick="like_pressed({{ book.id }})">
-                                 <img src="{% static 'main_page/like.webp' %}" style="max-height:40px">
-                              </element>
-                              <element onclick="dislike_pressed({{ book.id }})">
-                                 <img src="{% static 'main_page/dislike.webp' %}" style="max-height:40px">
-                              </element>
-                           </th>
-                           <th>
-                              <font class="likes_counter book_with_id_{{ book.id }}"
-                                 {% if book.likes > 0 %}
-                                    color="green"
-                                 {% elif book.likes == 0 %}
-                                    color="black"
-                                 {% else %}
-                                    color="red"
-                                 {% endif %}
-                                 >
-                                 {% if book.likes > 0 %}
-                                    +{{ book.likes }}
-                                 {% else %}
-                                    {{ book.likes }}
-                                 {% endif %}
-                              </font>
-                           </th>
-                        </tr>
-                     </table>
-                  </th>
-                  <th>
-                     <div style="max-width:400px">
-                        <a href="/home/book_info?book_id={{ book.id }}"> {{ book.name }} </a> <br>
-                        <h4> Автор: {{ book.author }} </h4>
-                        {% if book.description|length < 150 %}
-                           {{ book.description }}
-                        {% else %}
-                           {{ book.description|slice:":150" }} ...
-                        {% endif %}
-                     </div>
-                  </th>
-               </tr>
-            {% endfor %}
-         </table>
-      </div>
-    </main>
-  </body>
-</html>
+                                 request.send(body)
+                              }
+                                                            
+                              function like_pressed(book_id){
+                                 send_request_to_like(book_id, 1)
+                                 set_like_counter_data(book_id, 20)
+                              }
+
+                              function dislike_pressed(book_id){
+                                 send_request_to_like(book_id, -1)
+                                 set_like_counter_data(book_id, -20)
+                              }
+                           </script>
+                           <element onclick="like_pressed({{ book.id }})">
+                              <img src="{% static 'main_page/like.webp' %}" style="max-height:40px">
+                           </element>
+                           <element onclick="dislike_pressed({{ book.id }})">
+                              <img src="{% static 'main_page/dislike.webp' %}" style="max-height:40px">
+                           </element>
+                        </th>
+                        <th>
+                           <font class="likes_counter book_with_id_{{ book.id }}"
+                              {% if book.likes > 0 %}
+                                 color="green"
+                              {% elif book.likes == 0 %}
+                                 color="black"
+                              {% else %}
+                                 color="red"
+                              {% endif %}
+                              >
+                              {% if book.likes > 0 %}
+                                 +{{ book.likes }}
+                              {% else %}
+                                 {{ book.likes }}
+                              {% endif %}
+                           </font>
+                        </th>
+                     </tr>
+                  </table>
+               </th>
+               <th>
+                  <div style="max-width:400px">
+                     <a href="/home/book_info?book_id={{ book.id }}"> {{ book.name }} </a> <br>
+                     <h4> Автор: {{ book.author }} </h4>
+                     {% if book.description|length < 150 %}
+                        {{ book.description }}
+                     {% else %}
+                        {{ book.description|slice:":150" }} ...
+                     {% endif %}
+                  </div>
+               </th>
+            </tr>
+         {% endfor %}
+      </table>
+   </div>
+{% endblock %}
